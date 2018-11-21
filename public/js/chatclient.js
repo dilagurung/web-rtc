@@ -647,6 +647,7 @@ function handleVideoOfferMsg(msg) {
     alert(myPeerConnection.signalingState);
     if(myPeerConnection.signalingState=='have-remote-offer' || myPeerConnection.signalingState== 'have-local-pranswer')
     {
+
       return myPeerConnection.createAnswer();
     }
     else
