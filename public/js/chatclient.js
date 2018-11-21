@@ -701,13 +701,18 @@ function handleVideoOfferMsg(msg) {
 // once the callee has decided to accept our request to talk.
 
 function handleVideoAnswerMsg(msg) {
-  alert("Call recipient has accepted our call");
+  log("Call recipient has accepted our call");
 
   // Configure the remote description, which is the SDP payload
   // in our "video-answer" message.
 
   var desc = new RTCSessionDescription(msg.sdp);
-  myPeerConnection.setRemoteDescription(desc).catch(reportError);
+  myPeerConnection.setRemoteDescription(desc).then(function () {
+    if(myPeerConnection.signalingState=='have-remote-offer' || myPeerConnection.signalingState== 'have-local-pranswer')
+    {
+      myPeerConnection.createAnswer();
+    }
+  }).catch(reportError);
 }
 
 // A new ICE candidate has been received from the other peer. Call
