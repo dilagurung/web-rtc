@@ -644,7 +644,7 @@ function handleVideoOfferMsg(msg) {
     // data describes the local end of our call, including the codec
     // information, options agreed upon, and so forth.
 
-    alert(myPeerConnection.signalingState);
+  //  alert(myPeerConnection.signalingState);
     if(myPeerConnection.signalingState=='have-remote-offer' || myPeerConnection.signalingState== 'have-local-pranswer')
     {
       return myPeerConnection.createAnswer();
