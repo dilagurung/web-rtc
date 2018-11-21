@@ -701,7 +701,7 @@ function handleVideoOfferMsg(msg) {
 // once the callee has decided to accept our request to talk.
 
 function handleVideoAnswerMsg(msg) {
-  log("Call recipient has accepted our call");
+  alert("Call recipient has accepted our call");
 
   // Configure the remote description, which is the SDP payload
   // in our "video-answer" message.
