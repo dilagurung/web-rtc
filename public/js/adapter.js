@@ -1986,6 +1986,7 @@ var edgeShim = {
     };
 
     window.RTCPeerConnection.prototype.createAnswer = function() {
+
       var self = this;
 
       var sdp = SDPUtils.writeSessionBoilerplate();

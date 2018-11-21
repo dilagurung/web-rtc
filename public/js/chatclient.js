@@ -218,11 +218,19 @@ function createPeerConnection() {
 
   myPeerConnection = new RTCPeerConnection({
     iceServers: [     // Information about ICE servers - Use your own!
+/*
       {
         urls: "turn:" + myHostname,  // A TURN server
         username: "webrtc",
         credential: "turnserver"
       }
+*/
+      {
+        url: 'turn:numb.viagenie.ca',
+        credential: 'muazkh',
+        username: 'webrtc@live.com'
+      }
+
     ]
   });
 
@@ -558,8 +566,59 @@ function handleVideoOfferMsg(msg) {
 
   var desc = new RTCSessionDescription(msg.sdp);
 
+/*
+
+  var signal = msg;
+
+  if (signal.sdp) {
+    myPeerConnection.setRemoteDescription(new RTCSessionDescription(signal.sdp)).then(function () {
+      // Only create answers in response to offers
+      if (signal.sdp.type == 'offer') {
+        myPeerConnection.createAnswer().then(createdDescription).catch(handleGetUserMediaError);
+      }
+    }).catch(handleGetUserMediaError);
+  } else if (signal.ice) {
+    myPeerConnection.addIceCandidate(new RTCIceCandidate(signal.ice)).catch(handleGetUserMediaError);
+  }
+
+
+
+
+  function createdDescription(description) {
+    console.log('got description ',description);
+
+    myPeerConnection.setLocalDescription(description).then(function() {
+
+      var msg = {
+        name: myUsername,
+        target: targetUsername,
+        type: "video-answer",
+        sdp: myPeerConnection.localDescription
+      };
+
+      // We've configured our end of the call now. Time to send our
+      // answer back to the caller so they know that we want to talk
+      // and how to talk to us.
+
+      log("Sending answer packet back to other peer");
+      sendToServer(msg);
+
+    }).catch(handleGetUserMediaError);
+
+  }
+
+
+
+
+}
+*/
+
   myPeerConnection.setRemoteDescription(desc).then(function () {
     log("Setting up the local media stream...");
+    if(myPeerConnection.signalingState=='have-remote-offer' || myPeerConnection.signalingState== 'have-local-pranswer')
+    {
+      myPeerConnection.createAnswer();
+    }
     return navigator.mediaDevices.getUserMedia(mediaConstraints);
   })
   .then(function(stream) {
@@ -584,14 +643,34 @@ function handleVideoOfferMsg(msg) {
     // start our stream up locally then create an SDP answer. This SDP
     // data describes the local end of our call, including the codec
     // information, options agreed upon, and so forth.
-    return myPeerConnection.createAnswer();
+
+    alert(myPeerConnection.signalingState);
+    if(myPeerConnection.signalingState=='have-remote-offer' || myPeerConnection.signalingState== 'have-local-pranswer')
+    {
+      return myPeerConnection.createAnswer();
+    }
+
+    /*if(myPeerConnection.signalingState=='have-remote-offer' || myPeerConnection.signalingState== 'have-local-pranswer')
+    {
+     return myPeerConnection.createAnswer();
+    }
+    else
+    {
+      return null;
+    }
+*/
   })
   .then(function(answer) {
     log("------> Setting local description after creating answer");
     // We now have our answer, so establish that as the local description.
     // This actually configures our end of the call to match the settings
     // specified in the SDP.
-    return myPeerConnection.setLocalDescription(answer);
+    if(myPeerConnection.signalingState=='have-remote-offer' || myPeerConnection.signalingState== 'have-local-pranswer')
+    {
+      return myPeerConnection.setLocalDescription(answer);
+    }
+
+
   })
   .then(function() {
     var msg = {
@@ -607,6 +686,8 @@ function handleVideoOfferMsg(msg) {
 
     log("Sending answer packet back to other peer");
     sendToServer(msg);
+
+
   })
   .catch(handleGetUserMediaError);
 }
