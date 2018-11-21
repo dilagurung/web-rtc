@@ -1,0 +1,11 @@
+/node_modules
+/.vscode
+/app/config.js
+/app/config.server.js
+.idea/workspace.xml
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+/uploads*
+/docs/*
